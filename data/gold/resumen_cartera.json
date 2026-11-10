@@ -1,0 +1,22 @@
+{
+  "generado": "2026-11-10",
+  "total": 26,
+  "porCiudad": {
+    "Jamundí": 12,
+    "Cali": 14
+  },
+  "porZona": {
+    "Sur": 26
+  },
+  "porArea": {
+    "Jamundí · Sur": 12,
+    "Cali · Sur": 14
+  },
+  "porTipo": {
+    "AGRO": 1,
+    "SPT": 25
+  },
+  "porEstado": {
+    "Prospecto": 26
+  }
+}

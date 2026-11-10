@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <title>Ruta de visitas</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗓️</text></svg>">
+</head>
+<body>
+<header class="top">
+  <h1>Ruta de visitas <small>Planifica el mes por día · exporta a Excel o imagen</small></h1>
+  <div class="row-btns">
+    <button id="png" class="p">Descargar imagen</button>
+    <button id="xlsxN">Excel solo nombres</button>
+    <button id="xlsx">Excel completo</button>
+    <details class="menu"><summary>Datos</summary>
+      <div class="pop">
+        <button id="bk">Descargar respaldo (.json)</button>
+        <button id="imp">Restaurar respaldo</button>
+        <button id="sync">Sincronizar con capa plata</button>
+        <input id="impf" type="file" accept="application/json" hidden>
+      </div>
+    </details>
+  </div>
+</header>
+
+<nav class="tabs"><button id="t1" class="on">Planificador</button><button id="t2">Análisis de clientes</button></nav>
+
+<main id="v1">
+  <section>
+    <div class="box">
+      <div class="nav"><button id="prev">‹ Anterior</button><h2 id="mes"></h2><div class="row-btns"><button id="hoy">Hoy</button><button id="next">Siguiente ›</button></div></div>
+      <div class="cal" id="cal"></div>
+    </div>
+    <div class="box"><h3 id="dtitle"></h3><div id="route"></div></div>
+  </section>
+  <aside>
+    <div class="box">
+      <h3>Agregar tienda</h3>
+      <input id="fn" placeholder="Nombre de la tienda" autocomplete="off">
+      <input id="fa" placeholder="Dirección" autocomplete="off">
+      <div class="row"><input id="fc" list="dlCiudad" placeholder="Ciudad" value="Cali"><input id="fz" list="dlZona" placeholder="Zona: Sur, Norte, Oeste…"></div>
+      <div class="row"><select id="fe"></select><input id="ft" list="dlTipo" placeholder="Tipo (SPT, AGRO…)"></div>
+      <datalist id="dlCiudad"></datalist><datalist id="dlZona"></datalist><datalist id="dlTipo"></datalist>
+      <button id="add" class="p">Agregar tienda</button>
+      <details><summary>Pegar varias tiendas</summary>
+        <textarea id="bulk" rows="4" placeholder="Una por línea: Nombre; Dirección; Ciudad; Zona; Estado; Tipo"></textarea>
+        <button id="addb">Agregar lista</button>
+      </details>
+    </div>
+    <div class="box">
+      <h3>Tiendas (<span id="cn">0</span>)</h3>
+      <div class="row"><input id="q" placeholder="Buscar…"><select id="fArea"></select></div>
+      <div class="row"><select id="fEstado"></select><select id="fTipo"></select>
+        <select id="so"><option value="area">Ordenar: Área</option><option value="nombre">Ordenar: Nombre</option><option value="estado">Ordenar: Estado</option><option value="tipo">Ordenar: Tipo</option><option value="visitas">Ordenar: Más visitas</option></select></div>
+      <div class="pool" id="pool"></div>
+    </div>
+  </aside>
+</main>
+
+<main id="v2" class="una" hidden>
+  <div>
+    <div class="box"><div class="nav"><button id="p2">‹ Anterior</button><h2 id="mes2"></h2><button id="n2">Siguiente ›</button></div><div class="cards" id="cards"></div></div>
+    <div class="brk" id="brk"></div>
+    <div class="box"><h3>Detalle por tienda</h3>
+      <div class="row">
+        <select id="ash"><option value="all">Todas</option><option value="yes">Agendadas</option><option value="no">Sin agendar</option><option value="multi">2 o más visitas</option></select>
+        <select id="aa"></select><select id="ae"></select>
+        <select id="as"><option value="visitas">Más visitas</option><option value="nombre">Nombre</option><option value="area">Área</option></select>
+      </div>
+      <div class="scroll"><table class="tb" id="tb"></table></div>
+    </div>
+  </div>
+</main>
+
+<dialog id="dlg">
+  <h3>Editar tienda</h3>
+  <label>Nombre</label><input id="en"><label>Dirección</label><input id="ea">
+  <div class="row"><div><label>Ciudad</label><input id="ec" list="dlCiudad"></div><div><label>Zona</label><input id="ez" list="dlZona"></div></div>
+  <div class="row"><div><label>Estado del cliente</label><select id="ee"></select></div><div><label>Tipo de cliente</label><input id="et" list="dlTipo"></div></div>
+  <div class="row"><button id="esave" class="p">Guardar cambios</button><button id="ecan">Cancelar</button><button id="edel" class="peligro">Eliminar tienda</button></div>
+</dialog>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

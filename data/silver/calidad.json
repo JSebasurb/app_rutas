@@ -1,0 +1,33 @@
+{
+  "filasEntrada": 46,
+  "clientesSalida": 26,
+  "duplicados": [
+    "Hello Mascotas — Cll 4 # 22-10",
+    "Huellas Con Stilo Rg — Cra 26a3 # 75a-27",
+    "Karens Pet — Cll 2b n 78 a 09",
+    "Mascotas Orion — Cra 50sur # 17c-07",
+    "Miss Mascotas Calipso — Cra 28e Cll 72c1 20",
+    "Mr Dogs Pet Shop — Cll 9b # 53 a sur-112",
+    "Pet Shop Mundo Peludo — Cll 11 # 24an 20",
+    "Pet Store — Cra 42 # 3-30",
+    "Petshop El Gran Simon — Cra 70 n 1c-55",
+    "Pocas Pulgas — Cra 48b # 48-107",
+    "San Tonny — Cll 26 # 35a-05",
+    "Servicios Veterinarios Natura — Cra 4 a # 22-135",
+    "Tienda Veterinaria Zoolocura — Cra 41a # 18 78",
+    "Tobi — Cll 54 # 8 a sur-60",
+    "Spa De Mascotas Pet Groming Huellitas — Cll 10 # 12-16",
+    "Tienda Animal Mundo Mascotas — Cll 15 # 34-73",
+    "Tienda De Mascotas — Cra 4 Sur # 5-14",
+    "Tienda De Mascotas — Cra 8 # 8-28",
+    "Tienda De Mascotas Animal Trendy — Cra 13 # 10-28",
+    "Tienda Para Mascotas El Molinito — Cll 11 # 12-55"
+  ],
+  "rechazadas": [],
+  "advertencias": [
+    "Petshop El Gran Simon: dirección sin numeral (#) → \"Cra 70 n 1c-55\"",
+    "Finca Mascotas: dirección sin numeral (#) → \"Cll 2 oeste n 52-19\"",
+    "Karens Pet: dirección sin numeral (#) → \"Cll 2b n 78 a 09\"",
+    "Miss Mascotas Calipso: dirección sin numeral (#) → \"Cra 28e Cll 72c1 20\""
+  ]
+}

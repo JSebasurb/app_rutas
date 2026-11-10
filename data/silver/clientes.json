@@ -1,0 +1,236 @@
+[
+  {
+    "id": "c_6b5ac7d0",
+    "nombre": "Almacen Agrogandero",
+    "direccion": "Cra 11 # 9-53",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "AGRO",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_516d1b9f",
+    "nombre": "Angel Dog Pet Shop",
+    "direccion": "Cra 24d # 33b 59",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_94197d32",
+    "nombre": "Bigotudos",
+    "direccion": "Cra 47 # 51-04",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_b44c04b4",
+    "nombre": "Esponjositos",
+    "direccion": "Cll 17 # 33-60",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_7be6d095",
+    "nombre": "Fami Animal Mr Caninos",
+    "direccion": "Cra 23a 2 # 8a-04",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_bae2f763",
+    "nombre": "Finca Mascotas",
+    "direccion": "Cll 2 oeste n 52-19",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_df05afc4",
+    "nombre": "Hello Mascotas",
+    "direccion": "Cll 4 # 22-10",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_319511e3",
+    "nombre": "Huellas Con Stilo Rg",
+    "direccion": "Cra 26a3 # 75a-27",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_039a3744",
+    "nombre": "Karens Pet",
+    "direccion": "Cll 2b n 78 a 09",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_9bf454dc",
+    "nombre": "Mascotas Orion",
+    "direccion": "Cra 50sur # 17c-07",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_38f136a6",
+    "nombre": "Miss Mascotas Calipso",
+    "direccion": "Cra 28e Cll 72c1 20",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_3734f5b7",
+    "nombre": "Mr Dogs Pet Shop",
+    "direccion": "Cll 9b # 53 a sur-112",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_62542fa0",
+    "nombre": "Pet Shop Mundo Peludo",
+    "direccion": "Cll 11 # 24an 20",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_ee182599",
+    "nombre": "Pet Store",
+    "direccion": "Cra 42 # 3-30",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_f1bc7276",
+    "nombre": "Petshop El Gran Simon",
+    "direccion": "Cra 70 n 1c-55",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_93d42dd9",
+    "nombre": "Pocas Pulgas",
+    "direccion": "Cra 48b # 48-107",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_570bc9d0",
+    "nombre": "San Tonny",
+    "direccion": "Cll 26 # 35a-05",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_ad1135b0",
+    "nombre": "Servicios Veterinarios Natura",
+    "direccion": "Cra 4 a # 22-135",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_fdef8716",
+    "nombre": "Spa De Mascotas Pet Groming Huellitas",
+    "direccion": "Cll 10 # 12-16",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_514e0eac",
+    "nombre": "Tienda Animal Mundo Mascotas",
+    "direccion": "Cll 15 # 34-73",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_ada44ed8",
+    "nombre": "Tienda De Mascotas",
+    "direccion": "Cra 4 Sur # 5-14",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_3b7868be",
+    "nombre": "Tienda De Mascotas",
+    "direccion": "Cra 8 # 8-28",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_474d2b81",
+    "nombre": "Tienda De Mascotas Animal Trendy",
+    "direccion": "Cra 13 # 10-28",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_ea4373a5",
+    "nombre": "Tienda Para Mascotas El Molinito",
+    "direccion": "Cll 11 # 12-55",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_af8bd590",
+    "nombre": "Tienda Veterinaria Zoolocura",
+    "direccion": "Cra 41a # 18 78",
+    "ciudad": "Cali",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  },
+  {
+    "id": "c_968f00c6",
+    "nombre": "Tobi",
+    "direccion": "Cll 54 # 8 a sur-60",
+    "ciudad": "Jamundí",
+    "zona": "Sur",
+    "tipo": "SPT",
+    "estado": "Prospecto"
+  }
+]
