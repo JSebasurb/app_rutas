@@ -3,6 +3,8 @@ import { app, importarRespaldo, iniciar, respaldo, sincronizarSilver, suscribir,
 import { $, descargar } from "./ui/dom.ts";
 import { bindPlanner, renderCal, renderFiltros, renderPool, renderRoute } from "./ui/planner.ts";
 import { bindEditor } from "./ui/editor.ts";
+import { bindImportar } from "./ui/importar.ts";
+import { abrirAuto, bindAuto } from "./ui/auto.ts";
 import { bindAnalisis, renderAnalisis } from "./ui/analysis.ts";
 import { exportarPng } from "./export/png.ts";
 import { exportarXlsx } from "./export/xlsx.ts";
@@ -34,6 +36,9 @@ async function conCarga(btn: HTMLElement, f: () => Promise<void> | void) {
 
 bindPlanner();
 bindEditor();
+bindImportar();
+bindAuto();
+$("auto").onclick = abrirAuto;
 bindAnalisis(() => mostrar(1));
 $("t1").onclick = () => mostrar(1);
 $("t2").onclick = () => mostrar(2);

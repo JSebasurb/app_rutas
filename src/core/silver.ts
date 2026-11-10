@@ -53,6 +53,12 @@ export function normalizarEstado(e: string | undefined): Estado {
 
 export const normalizarTipo = (t: string | undefined) => limpiar(t).toUpperCase();
 
+/** "Cali-Sur" → "Sur"; "sur" → "Sur". */
+export function normalizarZona(z: string | undefined): string {
+  const t = limpiar(z);
+  return capitalizar(t.includes("-") ? t.split("-").pop()!.trim() : t);
+}
+
 export function idCliente(nombre: string, direccion: string): string {
   const k = sinTildes(nombre) + "|" + sinTildes(direccion).replace(/[^a-z0-9]/g, "");
   return "c_" + fnv1a(k);
@@ -68,7 +74,8 @@ export function crearCliente(d: DatosCliente): Cliente | null {
     nombre,
     direccion,
     ciudad: capitalizar(limpiar(d.ciudad)),
-    zona: capitalizar(limpiar(d.zona)),
+    zona: normalizarZona(d.zona),
+    barrio: limpiar(d.barrio),
     tipo: normalizarTipo(d.tipo),
     estado: normalizarEstado(d.estado),
   };
@@ -76,7 +83,7 @@ export function crearCliente(d: DatosCliente): Cliente | null {
 
 export function desdeBronce(r: Partial<BronzeRow>): Cliente | null {
   const u = parseUbicacion(r.ubicacion ?? "");
-  return crearCliente({ nombre: r.nombre ?? "", direccion: r.direccion ?? "", ciudad: u.ciudad, zona: u.zona, tipo: r.segmento, estado: r.estado });
+  return crearCliente({ nombre: r.nombre ?? "", direccion: r.direccion ?? "", ciudad: u.ciudad, zona: u.zona, tipo: r.segmento, estado: r.estado, barrio: r.barrio });
 }
 
 export interface ReporteCalidad {

@@ -19,6 +19,7 @@
         <button id="bk">Descargar respaldo (.json)</button>
         <button id="imp">Restaurar respaldo</button>
         <button id="sync">Sincronizar con capa plata</button>
+        <button id="undo">Deshacer autoplanificación</button>
         <input id="impf" type="file" accept="application/json" hidden>
       </div>
     </details>
@@ -30,7 +31,7 @@
 <main id="v1">
   <section>
     <div class="box">
-      <div class="nav"><button id="prev">‹ Anterior</button><h2 id="mes"></h2><div class="row-btns"><button id="hoy">Hoy</button><button id="next">Siguiente ›</button></div></div>
+      <div class="nav"><button id="prev">‹ Anterior</button><h2 id="mes"></h2><div class="row-btns"><button id="auto" class="p">Autoplanificar</button><button id="hoy">Hoy</button><button id="next">Siguiente ›</button></div></div>
       <div class="cal" id="cal"></div>
     </div>
     <div class="box"><h3 id="dtitle"></h3><div id="route"></div></div>
@@ -40,14 +41,12 @@
       <h3>Agregar tienda</h3>
       <input id="fn" placeholder="Nombre de la tienda" autocomplete="off">
       <input id="fa" placeholder="Dirección" autocomplete="off">
-      <div class="row"><input id="fc" list="dlCiudad" placeholder="Ciudad" value="Cali"><input id="fz" list="dlZona" placeholder="Zona: Sur, Norte, Oeste…"></div>
+      <input id="fb" placeholder="Barrio" autocomplete="off">
+      <div class="row"><input id="fc" list="dlCiudad" placeholder="Ciudad" value="Cali"><input id="fz" list="dlZona" placeholder="Área: Sur, Norte, Oeste…"></div>
       <div class="row"><select id="fe"></select><input id="ft" list="dlTipo" placeholder="Tipo (SPT, AGRO…)"></div>
       <datalist id="dlCiudad"></datalist><datalist id="dlZona"></datalist><datalist id="dlTipo"></datalist>
       <button id="add" class="p">Agregar tienda</button>
-      <details><summary>Pegar varias tiendas</summary>
-        <textarea id="bulk" rows="4" placeholder="Una por línea: Nombre; Dirección; Ciudad; Zona; Estado; Tipo"></textarea>
-        <button id="addb">Agregar lista</button>
-      </details>
+      <button id="abrirImp">Importar tiendas (archivo, texto o imagen)</button>
     </div>
     <div class="box">
       <h3>Tiendas (<span id="cn">0</span>)</h3>
@@ -76,10 +75,31 @@
 
 <dialog id="dlg">
   <h3>Editar tienda</h3>
-  <label>Nombre</label><input id="en"><label>Dirección</label><input id="ea">
+  <label>Nombre</label><input id="en"><label>Dirección</label><input id="ea"><label>Barrio</label><input id="eb">
   <div class="row"><div><label>Ciudad</label><input id="ec" list="dlCiudad"></div><div><label>Zona</label><input id="ez" list="dlZona"></div></div>
   <div class="row"><div><label>Estado del cliente</label><select id="ee"></select></div><div><label>Tipo de cliente</label><input id="et" list="dlTipo"></div></div>
   <div class="row"><button id="esave" class="p">Guardar cambios</button><button id="ecan">Cancelar</button><button id="edel" class="peligro">Eliminar tienda</button></div>
+</dialog>
+
+<dialog id="dimp">
+  <h3>Importar tiendas</h3>
+  <p class="hint">Datos de entrada: <b>nombre, dirección, barrio y área</b> (en ese orden, con o sin encabezado). Acepta CSV, Excel (.xlsx), texto pegado desde Excel o <b>imágenes</b> (capturas o fotos): se lee el texto con OCR y tú revisas antes de importar. También puedes pegar una captura con Ctrl+V.</p>
+  <div class="row"><input id="impArchivo" type="file" accept=".csv,.txt,.xlsx,image/*" multiple><button id="plantilla">Descargar plantilla</button></div>
+  <textarea id="impTexto" rows="5" placeholder="O pega aquí las filas copiadas de Excel: nombre ⇥ dirección ⇥ barrio ⇥ área"></textarea>
+  <div class="row"><div><label>Ciudad (si no viene)</label><input id="impCiudad" list="dlCiudad" value="Cali"></div><div><label>Estado</label><select id="impEstado"></select></div><div><label>Tipo</label><input id="impTipo" list="dlTipo" placeholder="SPT, AGRO…"></div></div>
+  <div id="impOcr" class="hint"></div>
+  <div id="impVista"></div>
+  <div class="row"><button id="impOk" class="p" disabled>Importar</button><button id="impCan">Cerrar</button></div>
+</dialog>
+
+<dialog id="dauto">
+  <h3 id="autoTitulo">Autoplanificar</h3>
+  <p class="hint">Reparte las tiendas por los días hábiles del mes agrupando por área y barrio, para que cada día quede en la misma zona. Puedes deshacerlo desde el menú Datos.</p>
+  <div class="row"><div><label>Visitas por día (máximo)</label><input id="autoPorDia" type="number" min="1" max="30" value="6"></div><div><label>Estado del cliente</label><select id="autoEstado"></select></div></div>
+  <label>Días de trabajo</label><div id="autoDias" class="dias"></div>
+  <label class="dd"><input id="autoSolo" type="checkbox" checked> Solo tiendas sin agendar este mes</label>
+  <div id="autoVista" class="hint"></div>
+  <div class="row"><button id="autoOk" class="p">Aplicar</button><button id="autoCan">Cancelar</button></div>
 </dialog>
 
 <script type="module" src="/src/main.ts"></script>

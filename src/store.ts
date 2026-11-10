@@ -1,4 +1,4 @@
-import type { Agenda, Cliente, DatosCliente, Respaldo } from "./types.ts";
+import type { Agenda, Cliente, DatosCliente, Hechas, Respaldo } from "./types.ts";
 import { crearCliente } from "./core/silver.ts";
 import { etiquetaArea } from "./core/gold.ts";
 import { hoy } from "./core/dates.ts";
@@ -10,6 +10,7 @@ const d0 = new Date();
 export const app = {
   clientes: [] as Cliente[],
   agenda: {} as Agenda,
+  hechas: {} as Hechas,
   year: d0.getFullYear(),
   month: d0.getMonth(),
   sel: null as string | null,
@@ -20,10 +21,11 @@ export const suscribir = (f: () => void) => void suscriptores.push(f);
 
 export function guardar() {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ version: 2, clientes: app.clientes, agenda: app.agenda }));
+    localStorage.setItem(KEY, JSON.stringify({ version: 2, clientes: app.clientes, agenda: app.agenda, hechas: app.hechas }));
   } catch { /* almacenamiento no disponible */ }
 }
 export function emitir() {
+  depurarHechas();
   guardar();
   suscriptores.forEach((f) => f());
 }
@@ -48,12 +50,14 @@ export async function iniciar() {
       const d = JSON.parse(raw) as Respaldo;
       app.clientes = d.clientes ?? [];
       app.agenda = d.agenda ?? {};
+      app.hechas = d.hechas ?? {};
     } catch {
       app.clientes = await leerSilver();
     }
   } else {
     app.clientes = await leerSilver(); // primera visita: sembrar desde la capa plata
   }
+  app.clientes.forEach((c) => { c.barrio ??= ""; }); // datos guardados antes de existir "barrio"
   app.sel = hoy();
   emitir();
 }
@@ -68,17 +72,16 @@ export function agregarCliente(d: DatosCliente): string | null {
   return null;
 }
 
-/** Líneas: Nombre; Dirección; Ciudad; Zona; Estado; Tipo  (también acepta tabulaciones de Excel). */
-export function importarLista(texto: string): number {
-  let n = 0;
-  for (const linea of texto.split("\n")) {
-    const p = linea.split(/[;\t]/).map((s) => s.trim());
-    if (p.length < 2) continue;
-    const c = crearCliente({ nombre: p[0], direccion: p[1], ciudad: p[2], zona: p[3], estado: p[4], tipo: p[5] });
-    if (c && !buscar(c.id)) { app.clientes.push(c); n++; }
+export function importarDatos(datos: DatosCliente[]): { nuevos: number; duplicados: number; invalidos: number } {
+  const r = { nuevos: 0, duplicados: 0, invalidos: 0 };
+  for (const d of datos) {
+    const c = crearCliente(d);
+    if (!c) r.invalidos++;
+    else if (buscar(c.id)) r.duplicados++;
+    else { app.clientes.push(c); r.nuevos++; }
   }
-  if (n) emitir();
-  return n;
+  if (r.nuevos) emitir();
+  return r;
 }
 
 export function editarCliente(id: string, d: DatosCliente): string | null {
@@ -146,14 +149,15 @@ export function irHoy() {
 }
 
 // ---------- respaldo y sincronización
-export const respaldo = (): Respaldo => ({ version: 2, clientes: app.clientes, agenda: app.agenda });
+export const respaldo = (): Respaldo => ({ version: 2, clientes: app.clientes, agenda: app.agenda, hechas: app.hechas });
 
 export function importarRespaldo(texto: string): string | null {
   try {
     const d = JSON.parse(texto) as Respaldo;
     if (d.version !== 2 || !Array.isArray(d.clientes) || typeof d.agenda !== "object") return "El archivo no es un respaldo válido.";
-    app.clientes = d.clientes;
+    app.clientes = d.clientes.map((c) => ({ ...c, barrio: c.barrio ?? "" }));
     app.agenda = d.agenda;
+    app.hechas = d.hechas ?? {};
     emitir();
     return null;
   } catch {
@@ -167,4 +171,33 @@ export async function sincronizarSilver(): Promise<number> {
   app.clientes.push(...nuevos);
   if (nuevos.length) emitir();
   return nuevos.length;
+}
+
+// ---------- visitas realizadas y autoplanificación
+function depurarHechas() {
+  for (const k of Object.keys(app.hechas)) {
+    app.hechas[k] = app.hechas[k].filter((id) => app.agenda[k]?.includes(id));
+    if (!app.hechas[k].length) delete app.hechas[k];
+  }
+}
+
+export function alternarHecha(k: string, id: string) {
+  const a = (app.hechas[k] ??= []);
+  const i = a.indexOf(id);
+  if (i >= 0) a.splice(i, 1); else a.push(id);
+  emitir();
+}
+
+let previa: Agenda | null = null;
+export function aplicarAgenda(nueva: Agenda) {
+  previa = structuredClone(app.agenda);
+  app.agenda = nueva;
+  emitir();
+}
+export function deshacerAuto(): boolean {
+  if (!previa) return false;
+  app.agenda = previa;
+  previa = null;
+  emitir();
+  return true;
 }

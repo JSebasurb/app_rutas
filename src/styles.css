@@ -57,3 +57,12 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
 .scroll{overflow-x:auto}.tb{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
 .tb th{text-align:left;color:var(--mut);padding:6px;border-bottom:2px solid var(--line)}.tb td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
 .dchip{display:inline-block;background:var(--pri2);color:var(--pri);border-radius:6px;padding:1px 6px;margin:1px;cursor:pointer;font-size:12px}.v0{color:var(--mut)}
+.hint{font-size:13px;color:var(--mut);margin:4px 0 8px}
+dialog#dimp{width:min(620px,94vw)}
+input[type=checkbox]{width:18px;height:18px;margin:0;padding:0;flex:0 0 auto;accent-color:var(--pri)}
+.btn{display:inline-block;text-decoration:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:3px 8px;font-size:13px}
+.btn:hover{border-color:var(--pri)}
+.item.hecha .t{opacity:.55}.item.hecha .t b{text-decoration:line-through}
+.chip.ok{background:var(--pri);color:var(--on-pri)}
+.dias{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 10px}.dd{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--ink)}
+dialog#dauto{width:min(520px,94vw)}

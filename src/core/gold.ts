@@ -1,7 +1,7 @@
 /**
  * CAPA ORO — métricas listas para consumir (resumen de cartera y análisis mensual de agenda).
  */
-import type { Agenda, Cliente } from "../types.ts";
+import type { Agenda, Cliente, Hechas } from "../types.ts";
 import { indiceSemana, prefijoMes } from "./dates.ts";
 
 export const etiquetaArea = (c: Cliente) => (c.zona ? `${c.ciudad} · ${c.zona}` : c.ciudad || "Sin área");
@@ -30,21 +30,25 @@ export function resumenCartera(cs: Cliente[]) {
 export interface FilaMes {
   cliente: Cliente;
   dias: number[];
+  /** cuántas de esas visitas ya se marcaron como hechas */
+  hechas: number;
 }
 
 /** Para cada cliente, los días del mes en que está agendado. */
-export function filasMes(cs: Cliente[], agenda: Agenda, y: number, m: number): FilaMes[] {
+export function filasMes(cs: Cliente[], agenda: Agenda, y: number, m: number, hechas: Hechas = {}): FilaMes[] {
   const pre = prefijoMes(y, m);
   const mapa = new Map<string, number[]>();
+  const hh = new Map<string, number>();
   for (const k of Object.keys(agenda).sort()) {
     if (!k.startsWith(pre)) continue;
     for (const id of agenda[k]) {
       let a = mapa.get(id);
       if (!a) mapa.set(id, (a = []));
       a.push(+k.slice(8));
+      if (hechas[k]?.includes(id)) hh.set(id, (hh.get(id) ?? 0) + 1);
     }
   }
-  return cs.map((c) => ({ cliente: c, dias: mapa.get(c.id) ?? [] }));
+  return cs.map((c) => ({ cliente: c, dias: mapa.get(c.id) ?? [], hechas: hh.get(c.id) ?? 0 }));
 }
 
 export interface Grupo {
@@ -69,10 +73,11 @@ export function agrupar(filas: FilaMes[], f: (c: Cliente) => string, orden?: rea
   return orden ? arr : arr.sort((a, b) => a.clave.localeCompare(b.clave, "es"));
 }
 
-export function analisisMes(cs: Cliente[], agenda: Agenda, y: number, m: number) {
-  const filas = filasMes(cs, agenda, y, m);
+export function analisisMes(cs: Cliente[], agenda: Agenda, y: number, m: number, hechas: Hechas = {}) {
+  const filas = filasMes(cs, agenda, y, m, hechas);
   const agendadas = filas.filter((r) => r.dias.length).length;
   const visitas = filas.reduce((a, r) => a + r.dias.length, 0);
+  const realizadas = filas.reduce((a, r) => a + r.hechas, 0);
   const porSemana = [0, 0, 0, 0, 0, 0, 0];
   for (const r of filas) for (const d of r.dias) porSemana[indiceSemana(y, m, d)]++;
   return {
@@ -81,6 +86,8 @@ export function analisisMes(cs: Cliente[], agenda: Agenda, y: number, m: number)
     agendadas,
     sinAgendar: cs.length - agendadas,
     visitas,
+    realizadas,
+    cumplimiento: visitas ? Math.round((realizadas * 100) / visitas) : 0,
     cobertura: cs.length ? Math.round((agendadas * 100) / cs.length) : 0,
     porSemana,
   };

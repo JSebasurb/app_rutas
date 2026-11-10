@@ -6,6 +6,7 @@ export interface BronzeRow {
   nombre: string;
   direccion: string;
   ubicacion: string;
+  barrio?: string;
   segmento: string;
   estado: string;
   gestion: string;
@@ -17,6 +18,7 @@ export interface Cliente {
   id: string;
   nombre: string;
   direccion: string;
+  barrio: string;
   ciudad: string;
   zona: string;
   tipo: string;
@@ -26,6 +28,7 @@ export interface Cliente {
 export interface DatosCliente {
   nombre: string;
   direccion: string;
+  barrio?: string;
   ciudad?: string;
   zona?: string;
   tipo?: string;
@@ -35,8 +38,12 @@ export interface DatosCliente {
 /** Agenda: fecha (YYYY-MM-DD) → ids de clientes en el orden de visita. */
 export type Agenda = Record<string, string[]>;
 
+/** Visitas realizadas: fecha → ids marcados como hechos. */
+export type Hechas = Record<string, string[]>;
+
 export interface Respaldo {
   version: 2;
   clientes: Cliente[];
   agenda: Agenda;
+  hechas?: Hechas;
 }

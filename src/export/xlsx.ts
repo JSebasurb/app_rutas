@@ -39,7 +39,7 @@ export async function exportarXlsx(modo: "completo" | "nombres") {
       cell.alignment = { vertical: "top", wrapText: true };
       if (c.fuera) { cell.fill = relleno("FFEEEEEE"); return; }
       const L = clientesDelDia(c.k);
-      const textos = L.map((x) => (modo === "nombres" ? `• ${x.nombre}` : `• ${x.nombre}\n   ${x.direccion} (${etiquetaArea(x)})`));
+      const textos = L.map((x) => (modo === "nombres" ? `• ${x.nombre}` : `• ${x.nombre}\n   ${x.direccion}${x.barrio ? ", " + x.barrio : ""} (${etiquetaArea(x)})`));
       lineas = Math.max(lineas, 1 + textos.reduce((a, s) => a + s.split("\n").reduce((b, l) => b + Math.ceil(l.length / 30), 0), 0));
       cell.value = {
         richText: [
@@ -64,14 +64,15 @@ export async function exportarXlsx(modo: "completo" | "nombres") {
     const wd = wb.addWorksheet("Detalle", { views: [{ state: "frozen", ySplit: 1 }] });
     wd.columns = [
       { header: "Fecha", key: "f", width: 12 }, { header: "Día", key: "d", width: 8 }, { header: "Orden", key: "o", width: 8 },
-      { header: "Tienda", key: "t", width: 38 }, { header: "Dirección", key: "dir", width: 30 }, { header: "Área", key: "a", width: 18 },
+      { header: "Tienda", key: "t", width: 38 }, { header: "Dirección", key: "dir", width: 30 }, { header: "Barrio", key: "b", width: 20 }, { header: "Área", key: "a", width: 18 },
       { header: "Estado", key: "e", width: 16 }, { header: "Tipo", key: "tp", width: 10 },
     ];
+    wd.columns = [...wd.columns, { header: "Hecha", key: "h", width: 8 }];
     cabecera(wd, 1);
     for (let d = 1; d <= diasEnMes(y, m); d++) {
-      clientesDelDia(clave(y, m, d)).forEach((c, i) => wd.addRow({ f: `${pad(d)}/${pad(m + 1)}/${y}`, d: diaSemana(y, m, d), o: i + 1, t: c.nombre, dir: c.direccion, a: etiquetaArea(c), e: c.estado, tp: c.tipo }));
+      clientesDelDia(clave(y, m, d)).forEach((c, i) => wd.addRow({ f: `${pad(d)}/${pad(m + 1)}/${y}`, d: diaSemana(y, m, d), o: i + 1, t: c.nombre, dir: c.direccion, b: c.barrio, a: etiquetaArea(c), e: c.estado, tp: c.tipo, h: app.hechas[clave(y, m, d)]?.includes(c.id) ? "Sí" : "No" }));
     }
-    wd.autoFilter = { from: "A1", to: "H1" };
+    wd.autoFilter = { from: "A1", to: "J1" };
 
     // ---- Análisis
     const wa = wb.addWorksheet("Análisis", { views: [{ state: "frozen", ySplit: 1 }] });
@@ -79,23 +80,24 @@ export async function exportarXlsx(modo: "completo" | "nombres") {
       { header: "Tienda", key: "t", width: 38 }, { header: "Área", key: "a", width: 18 }, { header: "Estado", key: "e", width: 16 },
       { header: "Tipo", key: "tp", width: 10 }, { header: "Veces agendada", key: "n", width: 16 }, { header: "Días", key: "d", width: 40 },
     ];
+    wa.columns = [...wa.columns, { header: "Hechas", key: "h", width: 10 }];
     cabecera(wa, 1);
-    const r = analisisMes(app.clientes, app.agenda, y, m);
-    [...r.filas].sort((a, b) => b.dias.length - a.dias.length || a.cliente.nombre.localeCompare(b.cliente.nombre, "es")).forEach(({ cliente: c, dias }) =>
-      wa.addRow({ t: c.nombre, a: etiquetaArea(c), e: c.estado, tp: c.tipo, n: dias.length, d: dias.length ? dias.map((d) => `${d} (${diaSemana(y, m, d)})`).join(", ") : "Sin agendar" }));
-    wa.autoFilter = { from: "A1", to: "F1" };
+    const r = analisisMes(app.clientes, app.agenda, y, m, app.hechas);
+    [...r.filas].sort((a, b) => b.dias.length - a.dias.length || a.cliente.nombre.localeCompare(b.cliente.nombre, "es")).forEach(({ cliente: c, dias, hechas }) =>
+      wa.addRow({ t: c.nombre, a: etiquetaArea(c), e: c.estado, tp: c.tipo, n: dias.length, h: hechas, d: dias.length ? dias.map((d) => `${d} (${diaSemana(y, m, d)})`).join(", ") : "Sin agendar" }));
+    wa.autoFilter = { from: "A1", to: "G1" };
     wa.addRow([]);
     wa.addRow([`Cobertura: ${r.agendadas} de ${r.total} tiendas (${r.cobertura}%) · ${r.visitas} visitas en el mes`]).font = { bold: true };
 
     // ---- Clientes
     const wc = wb.addWorksheet("Clientes", { views: [{ state: "frozen", ySplit: 1 }] });
     wc.columns = [
-      { header: "Tienda", key: "t", width: 38 }, { header: "Dirección", key: "d", width: 30 }, { header: "Ciudad", key: "c", width: 14 },
+      { header: "Tienda", key: "t", width: 38 }, { header: "Dirección", key: "d", width: 30 }, { header: "Barrio", key: "b", width: 20 }, { header: "Ciudad", key: "c", width: 14 },
       { header: "Zona", key: "z", width: 12 }, { header: "Estado", key: "e", width: 16 }, { header: "Tipo", key: "tp", width: 10 },
     ];
     cabecera(wc, 1);
-    app.clientes.forEach((c) => wc.addRow({ t: c.nombre, d: c.direccion, c: c.ciudad, z: c.zona, e: c.estado, tp: c.tipo }));
-    wc.autoFilter = { from: "A1", to: "F1" };
+    app.clientes.forEach((c) => wc.addRow({ t: c.nombre, d: c.direccion, b: c.barrio, c: c.ciudad, z: c.zona, e: c.estado, tp: c.tipo }));
+    wc.autoFilter = { from: "A1", to: "G1" };
   }
   const buf = await wb.xlsx.writeBuffer();
   descargar(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }), `ruta_visitas_${y}-${pad(m + 1)}${modo === "nombres" ? "_calendario" : ""}.xlsx`);

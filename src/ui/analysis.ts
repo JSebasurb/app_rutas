@@ -17,9 +17,9 @@ function barras(titulo: string, grupos: Grupo[]) {
 export function renderAnalisis() {
   const { year: y, month: m } = app;
   $("mes2").textContent = `${MESES[m]} ${y}`;
-  const r = analisisMes(app.clientes, app.agenda, y, m);
+  const r = analisisMes(app.clientes, app.agenda, y, m, app.hechas);
   const card = (v: string | number, l: string) => `<div class="card"><b>${v}</b><span>${l}</span></div>`;
-  $("cards").innerHTML = card(r.total, "Tiendas") + card(r.agendadas, "Agendadas este mes") + card(r.sinAgendar, "Sin agendar") + card(r.visitas, "Visitas del mes") + card(r.cobertura + "%", "Cobertura");
+  $("cards").innerHTML = card(r.total, "Tiendas") + card(r.agendadas, "Agendadas este mes") + card(r.sinAgendar, "Sin agendar") + card(r.visitas, "Visitas del mes") + card(r.cobertura + "%", "Cobertura") + card(r.cumplimiento + "%", `Cumplimiento (${r.realizadas}/${r.visitas} hechas)`);
 
   const maxS = Math.max(1, ...r.porSemana);
   const semana = `<div class="box"><h3>Visitas por día de la semana</h3><div class="wk">${r.porSemana.map((n, i) => `<div><div class="wb" style="height:${(n * 70) / maxS + 2}px"></div><b>${n}</b><span>${DIAS[i]}</span></div>`).join("")}</div></div>`;
@@ -31,9 +31,9 @@ export function renderAnalisis() {
   const cmp = (a: string, b: string) => a.localeCompare(b, "es");
   const R = r.filas.filter((f) => (!fa || etiquetaArea(f.cliente) === fa) && (!fe || f.cliente.estado === fe) && (sh === "all" || (sh === "yes" ? f.dias.length > 0 : sh === "no" ? !f.dias.length : f.dias.length > 1)));
   R.sort((a, b) => so === "nombre" ? cmp(a.cliente.nombre, b.cliente.nombre) : so === "area" ? cmp(etiquetaArea(a.cliente), etiquetaArea(b.cliente)) || cmp(a.cliente.nombre, b.cliente.nombre) : b.dias.length - a.dias.length || cmp(a.cliente.nombre, b.cliente.nombre));
-  $("tb").innerHTML = "<tr><th>Tienda</th><th>Área</th><th>Estado</th><th>Tipo</th><th>Veces</th><th>Días agendados</th></tr>" +
-    (R.map(({ cliente: c, dias }) => `<tr><td><b>${esc(c.nombre)}</b><br><span class="v0">${esc(c.direccion)}</span></td><td>${esc(etiquetaArea(c))}</td><td><span class="tag ${claseEstado(c.estado)}">${esc(c.estado)}</span></td><td>${esc(c.tipo)}</td><td><b>${dias.length}</b></td>
-      <td>${dias.length ? dias.map((d) => `<a class="dchip" data-k="${clave(y, m, d)}">${d} ${diaSemana(y, m, d)}</a>`).join("") : '<span class="v0">Sin agendar</span>'}</td></tr>`).join("") || '<tr><td colspan="6" class="empty">Sin resultados.</td></tr>');
+  $("tb").innerHTML = "<tr><th>Tienda</th><th>Área</th><th>Estado</th><th>Tipo</th><th>Veces</th><th>Hechas</th><th>Días agendados</th></tr>" +
+    (R.map(({ cliente: c, dias, hechas }) => `<tr><td><b>${esc(c.nombre)}</b><br><span class="v0">${esc(c.direccion)}${c.barrio ? " · " + esc(c.barrio) : ""}</span></td><td>${esc(etiquetaArea(c))}</td><td><span class="tag ${claseEstado(c.estado)}">${esc(c.estado)}</span></td><td>${esc(c.tipo)}</td><td><b>${dias.length}</b></td><td>${hechas}</td>
+      <td>${dias.length ? dias.map((d) => `<a class="dchip" data-k="${clave(y, m, d)}">${d} ${diaSemana(y, m, d)}</a>`).join("") : '<span class="v0">Sin agendar</span>'}</td></tr>`).join("") || '<tr><td colspan="7" class="empty">Sin resultados.</td></tr>');
 }
 
 export function bindAnalisis(irAPlanificador: () => void) {

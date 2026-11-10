@@ -5,6 +5,7 @@
     "direccion": "Cra 11 # 9-53",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "AGRO",
     "estado": "Prospecto"
   },
@@ -14,6 +15,7 @@
     "direccion": "Cra 24d # 33b 59",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -23,6 +25,7 @@
     "direccion": "Cra 47 # 51-04",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -32,6 +35,7 @@
     "direccion": "Cll 17 # 33-60",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -41,6 +45,7 @@
     "direccion": "Cra 23a 2 # 8a-04",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -50,6 +55,7 @@
     "direccion": "Cll 2 oeste n 52-19",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -59,6 +65,7 @@
     "direccion": "Cll 4 # 22-10",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -68,6 +75,7 @@
     "direccion": "Cra 26a3 # 75a-27",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -77,6 +85,7 @@
     "direccion": "Cll 2b n 78 a 09",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -86,6 +95,7 @@
     "direccion": "Cra 50sur # 17c-07",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -95,6 +105,7 @@
     "direccion": "Cra 28e Cll 72c1 20",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -104,6 +115,7 @@
     "direccion": "Cll 9b # 53 a sur-112",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -113,6 +125,7 @@
     "direccion": "Cll 11 # 24an 20",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -122,6 +135,7 @@
     "direccion": "Cra 42 # 3-30",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -131,6 +145,7 @@
     "direccion": "Cra 70 n 1c-55",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -140,6 +155,7 @@
     "direccion": "Cra 48b # 48-107",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -149,6 +165,7 @@
     "direccion": "Cll 26 # 35a-05",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -158,6 +175,7 @@
     "direccion": "Cra 4 a # 22-135",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -167,6 +185,7 @@
     "direccion": "Cll 10 # 12-16",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -176,6 +195,7 @@
     "direccion": "Cll 15 # 34-73",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -185,6 +205,7 @@
     "direccion": "Cra 4 Sur # 5-14",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -194,6 +215,7 @@
     "direccion": "Cra 8 # 8-28",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -203,6 +225,7 @@
     "direccion": "Cra 13 # 10-28",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -212,6 +235,7 @@
     "direccion": "Cll 11 # 12-55",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -221,6 +245,7 @@
     "direccion": "Cra 41a # 18 78",
     "ciudad": "Cali",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   },
@@ -230,6 +255,7 @@
     "direccion": "Cll 54 # 8 a sur-60",
     "ciudad": "Jamundí",
     "zona": "Sur",
+    "barrio": "",
     "tipo": "SPT",
     "estado": "Prospecto"
   }
