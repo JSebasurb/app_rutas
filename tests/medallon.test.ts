@@ -8,6 +8,8 @@ import { autoplanificar } from "../src/core/planner.ts";
 import { enlacesMaps, textoRuta } from "../src/core/rutas.ts";
 import { aTabla, extraerDeTexto, repararDireccion } from "../src/core/ocr.ts";
 import { readFileSync, readdirSync } from "node:fs";
+import { fichaCliente, resolverCliente } from "../src/core/ficha.ts";
+import { mapearVentas, parseFecha, parseMonto } from "../src/core/importar.ts";
 import { aplicarCorrecciones, aprender, corregirConConocidos, revisar, sinCorrecciones, similitud } from "../src/core/aprender.ts";
 
 test("normaliza direcciones", () => {
@@ -163,4 +165,50 @@ test("marca filas dudosas para revisar", () => {
   assert.deepEqual(revisar(crearCliente({ nombre: "Tobi", direccion: "Cll 54 # 8 sur-60", zona: "Sur" })!), []);
   const r = revisar(crearCliente({ nombre: "Pet@ Shop", direccion: "Calle sin numero" })!);
   assert.ok(r.includes("dirección sin #") && r.includes("símbolos raros en el nombre") && r.includes("sin zona"));
+});
+
+test("ficha de cliente: visitas hechas, vencidas y agendadas, y ventas", () => {
+  const a = tienda("A", "Sur", "x");
+  const agenda = { "2026-11-03": [a.id], "2026-11-05": [a.id], "2026-11-20": [a.id] };
+  const ventas = [
+    { id: "1", clienteId: a.id, fecha: "2026-10-15", monto: 100000, nota: "" },
+    { id: "2", clienteId: a.id, fecha: "2026-11-04", monto: 300000, nota: "" },
+    { id: "3", clienteId: "otro", fecha: "2026-11-04", monto: 999, nota: "" },
+  ];
+  const f = fichaCliente(a.id, agenda, { "2026-11-03": [a.id] }, ventas, "2026-11-12");
+  assert.deepEqual([f.realizadas, f.vencidas, f.agendadas], [1, 1, 1]);
+  assert.equal(f.cumplimiento, 50);
+  assert.equal(f.ultimaVisita, "2026-11-03");
+  assert.equal(f.proximaVisita, "2026-11-20");
+  assert.equal(f.ventasTotal, 400000);
+  assert.equal(f.ticket, 200000);
+  assert.deepEqual(f.ventasPorMes, [["2026-10", 100000], ["2026-11", 300000]]);
+});
+
+test("ventas: fechas y montos en formatos latinos y anglosajones", () => {
+  assert.equal(parseFecha("10/11/2026"), "2026-11-10");
+  assert.equal(parseFecha("2026-1-5"), "2026-01-05");
+  assert.equal(parseFecha("31/13/2026"), "");
+  assert.equal(parseMonto("$ 1.234.567"), 1234567);
+  assert.equal(parseMonto("1.234,50"), 1234.5);
+  assert.equal(parseMonto("1,234.50"), 1234.5);
+  assert.equal(parseMonto("850000"), 850000);
+  assert.equal(parseMonto("abc"), null);
+});
+
+test("ventas: importa por nombre de cliente y distingue homónimos por dirección", () => {
+  const a = crearCliente({ nombre: "Tienda De Mascotas", direccion: "Cra 8 # 8 - 28" })!;
+  const b = crearCliente({ nombre: "Tienda De Mascotas", direccion: "Cra 4 Sur # 5 - 14" })!;
+  const c = crearCliente({ nombre: "Tobi", direccion: "Cll 54 # 8 a sur - 60" })!;
+  assert.equal(resolverCliente([a, b, c], "tobi")!.id, c.id);
+  assert.equal(resolverCliente([a, b, c], "Tienda De Mascotas"), null); // ambiguo sin dirección
+  assert.equal(resolverCliente([a, b, c], "Tienda de mascotas", "Cra 4 sur #5-14")!.id, b.id);
+  const v = mapearVentas(leerTabla("Cliente;Fecha;Monto;Nota\nTobi;10/11/2026;$ 250.000;factura 12"));
+  assert.deepEqual(v[0], { cliente: "Tobi", direccion: "", fecha: "2026-11-10", monto: 250000, nota: "factura 12" });
+});
+
+test("importar tiendas con categoría, contacto y teléfono", () => {
+  const { datos } = mapearFilas(leerTabla("Nombre,Dirección,Barrio,Área,Categoría,Contacto,Teléfono\nTobi,Cll 1 # 2-3,Centro,Sur,A,Ana,3001234567"));
+  const c = crearCliente(datos[0])!;
+  assert.deepEqual([c.categoria, c.contacto, c.telefono], ["A", "Ana", "3001234567"]);
 });

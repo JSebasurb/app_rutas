@@ -66,3 +66,10 @@ input[type=checkbox]{width:18px;height:18px;margin:0;padding:0;flex:0 0 auto;acc
 .chip.ok{background:var(--pri);color:var(--on-pri)}
 .dias{display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 10px}.dd{display:inline-flex;align-items:center;gap:5px;font-size:14px;color:var(--ink)}
 dialog#dauto{width:min(520px,94vw)}
+.lnk{cursor:pointer;color:var(--pri);text-decoration:underline}
+.card b.chico{font-size:15px;padding:6px 0}
+.fh{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start}
+.tag.cat{background:var(--sel);color:var(--acc)!important}
+.st{display:inline-block;border-radius:10px;padding:0 8px;font-size:12px}
+.st.hecha{background:rgba(46,158,107,.18);color:#2e9e6b}.st.vencida{background:rgba(210,74,74,.18);color:#d24a4a}.st.agendada{background:var(--pri2);color:var(--pri)}
+.pop hr{border:0;border-top:1px solid var(--line);width:100%;margin:2px 0}

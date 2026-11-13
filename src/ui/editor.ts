@@ -16,6 +16,10 @@ export function abrirEditor(id: string) {
   $<HTMLInputElement>("ec").value = c.ciudad;
   $<HTMLInputElement>("ez").value = c.zona;
   $<HTMLInputElement>("et").value = c.tipo;
+  $<HTMLInputElement>("ek").value = c.categoria;
+  $<HTMLInputElement>("eco").value = c.contacto;
+  $<HTMLInputElement>("etel").value = c.telefono;
+  $<HTMLInputElement>("eno").value = c.notas;
   llenar($<HTMLSelectElement>("ee"), null, ESTADOS);
   $<HTMLSelectElement>("ee").value = c.estado;
   dlg().showModal();
@@ -24,7 +28,7 @@ export function abrirEditor(id: string) {
 export function bindEditor() {
   $("ecan").onclick = () => dlg().close();
   $("esave").onclick = () => {
-    const err = editarCliente(editId, { nombre: val("en"), direccion: val("ea"), barrio: val("eb"), ciudad: val("ec"), zona: val("ez"), estado: val("ee"), tipo: val("et") });
+    const err = editarCliente(editId, { nombre: val("en"), direccion: val("ea"), barrio: val("eb"), ciudad: val("ec"), zona: val("ez"), estado: val("ee"), tipo: val("et"), categoria: val("ek"), contacto: val("eco"), telefono: val("etel"), notas: val("eno") });
     if (err) alert(err);
     else dlg().close();
   };

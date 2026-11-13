@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-10",
+  "generado": "2026-11-13",
   "total": 26,
   "porCiudad": {
     "Jamundí": 12,
@@ -15,6 +15,9 @@
   "porTipo": {
     "AGRO": 1,
     "SPT": 25
+  },
+  "porCategoria": {
+    "Sin dato": 26
   },
   "porEstado": {
     "Prospecto": 26

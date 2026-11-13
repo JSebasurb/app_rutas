@@ -44,6 +44,10 @@ const ALIAS: Record<string, string[]> = {
   ciudad: ["ciudad", "municipio"],
   tipo: ["tipo", "segmento"],
   estado: ["estado"],
+  categoria: ["categoria", "clasificacion"],
+  contacto: ["contacto", "encargado", "responsable"],
+  telefono: ["telefono", "celular", "tel", "whatsapp"],
+  notas: ["notas", "nota", "observaciones"],
 };
 
 export function mapearFilas(filas: string[][]): { datos: DatosCliente[]; encabezado: boolean } {
@@ -53,11 +57,60 @@ export function mapearFilas(filas: string[][]): { datos: DatosCliente[]; encabez
   const encabezado = cab.some((c) => ALIAS.nombre.includes(c));
   const idx: Record<string, number> = encabezado
     ? Object.fromEntries(Object.entries(ALIAS).map(([k, v]) => [k, cab.findIndex((c) => v.includes(c))]))
-    : { nombre: 0, direccion: 1, barrio: 2, area: 3, ciudad: -1, tipo: -1, estado: -1 };
+    : { nombre: 0, direccion: 1, barrio: 2, area: 3, ciudad: -1, tipo: -1, estado: -1, categoria: -1, contacto: -1, telefono: -1, notas: -1 };
   const g = (r: string[], k: string) => (idx[k] >= 0 ? r[idx[k]] ?? "" : "");
   const datos = (encabezado ? filas.slice(1) : filas).map((r) => ({
     nombre: g(r, "nombre"), direccion: g(r, "direccion"), barrio: g(r, "barrio"),
     zona: g(r, "area"), ciudad: g(r, "ciudad"), tipo: g(r, "tipo"), estado: g(r, "estado"),
+    categoria: g(r, "categoria"), contacto: g(r, "contacto"), telefono: g(r, "telefono"), notas: g(r, "notas"),
   }));
   return { datos, encabezado };
 }
+
+// ---------- ventas
+export interface FilaVenta { cliente: string; direccion: string; fecha: string; monto: number | null; nota: string }
+
+/** "10/11/2026", "10-11-2026" (día/mes/año) o "2026-11-10" → "2026-11-10"; "" si no es válida. */
+export function parseFecha(s: string): string {
+  const t = limpiar(s);
+  let y = 0, m = 0, d = 0, r: RegExpMatchArray | null;
+  if ((r = t.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/))) { y = +r[1]; m = +r[2]; d = +r[3]; }
+  else if ((r = t.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/))) { d = +r[1]; m = +r[2]; y = +r[3]; }
+  if (!y || m < 1 || m > 12 || d < 1 || d > 31) return "";
+  return `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
+/** "$ 1.234,50", "1,234.50", "1.200", "850000" → número. */
+export function parseMonto(s: string): number | null {
+  let t = String(s ?? "").replace(/[^\d.,-]/g, "");
+  if (!/\d/.test(t)) return null;
+  const p = t.lastIndexOf("."), c = t.lastIndexOf(",");
+  if (p >= 0 && c >= 0) t = p > c ? t.replace(/,/g, "") : t.replace(/\./g, "").replace(",", ".");
+  else if (c >= 0) t = /,\d{3}$/.test(t) && t.split(",").length > 1 && !/,\d{1,2}$/.test(t) ? t.replace(/,/g, "") : t.replace(",", ".");
+  else if (p >= 0) t = /\.\d{3}$/.test(t) ? t.replace(/\./g, "") : t;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+
+const ALIAS_V: Record<string, string[]> = {
+  cliente: ["cliente", "nombre", "tienda"],
+  direccion: ["direccion", "dir"],
+  fecha: ["fecha"],
+  monto: ["monto", "valor", "venta", "ventas", "total", "importe"],
+  nota: ["nota", "notas", "detalle", "observaciones", "factura"],
+};
+
+/** Filas de ventas: cliente, fecha, monto, nota (con encabezado en cualquier orden, o en ese orden sin encabezado). */
+export function mapearVentas(filas: string[][]): FilaVenta[] {
+  if (!filas.length) return [];
+  const norm = (s: string) => sinTildes(limpiar(s));
+  const cab = filas[0].map(norm);
+  const enc = cab.some((c) => ALIAS_V.monto.includes(c) || ALIAS_V.cliente.includes(c));
+  const idx: Record<string, number> = enc
+    ? Object.fromEntries(Object.entries(ALIAS_V).map(([k, v]) => [k, cab.findIndex((c) => v.includes(c))]))
+    : { cliente: 0, direccion: -1, fecha: 1, monto: 2, nota: 3 };
+  const g = (r: string[], k: string) => (idx[k] >= 0 ? r[idx[k]] ?? "" : "");
+  return (enc ? filas.slice(1) : filas).map((r) => ({ cliente: limpiar(g(r, "cliente")), direccion: g(r, "direccion"), fecha: parseFecha(g(r, "fecha")), monto: parseMonto(g(r, "monto")), nota: limpiar(g(r, "nota")) }));
+}
+
+export const PLANTILLA_VENTAS = "cliente,direccion,fecha,monto,nota\nTienda Ejemplo,Cra 10 # 5-20,2026-11-10,250000,Factura 1234\n";

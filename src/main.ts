@@ -4,17 +4,19 @@ import { $, descargar } from "./ui/dom.ts";
 import { bindPlanner, renderCal, renderFiltros, renderPool, renderRoute } from "./ui/planner.ts";
 import { bindEditor } from "./ui/editor.ts";
 import { bindImportar } from "./ui/importar.ts";
+import { bindFicha, fijarFicha, renderFicha } from "./ui/ficha.ts";
+import { exportarBase, exportarCsv } from "./export/base.ts";
 import { abrirAuto, bindAuto } from "./ui/auto.ts";
 import { bindAnalisis, renderAnalisis } from "./ui/analysis.ts";
 import { exportarPng } from "./export/png.ts";
 import { exportarXlsx } from "./export/xlsx.ts";
 import { pad } from "./core/dates.ts";
 
-function mostrar(n: 1 | 2) {
-  $("v1").hidden = n !== 1;
-  $("v2").hidden = n !== 2;
-  $("t1").classList.toggle("on", n === 1);
-  $("t2").classList.toggle("on", n === 2);
+function mostrar(n: 1 | 2 | 3) {
+  ([1, 2, 3] as const).forEach((i) => {
+    $("v" + i).hidden = n !== i;
+    $("t" + i).classList.toggle("on", n === i);
+  });
 }
 
 function pintar() {
@@ -23,6 +25,7 @@ function pintar() {
   renderRoute();
   renderPool();
   renderAnalisis();
+  renderFicha();
 }
 
 async function conCarga(btn: HTMLElement, f: () => Promise<void> | void) {
@@ -38,6 +41,11 @@ bindPlanner();
 bindEditor();
 bindImportar();
 bindAuto();
+bindFicha(() => mostrar(1));
+document.addEventListener("ver-ficha", (e) => { fijarFicha((e as CustomEvent<string>).detail); mostrar(3); renderFicha(); });
+$("t3").onclick = () => mostrar(3);
+$("xdb").onclick = (e) => conCarga(e.currentTarget as HTMLElement, exportarBase);
+$("xcsv").onclick = exportarCsv;
 $("auto").onclick = abrirAuto;
 bindAnalisis(() => mostrar(1));
 $("t1").onclick = () => mostrar(1);

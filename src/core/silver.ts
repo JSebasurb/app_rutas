@@ -78,12 +78,16 @@ export function crearCliente(d: DatosCliente): Cliente | null {
     barrio: limpiar(d.barrio),
     tipo: normalizarTipo(d.tipo),
     estado: normalizarEstado(d.estado),
+    categoria: limpiar(d.categoria),
+    contacto: limpiar(d.contacto),
+    telefono: limpiar(d.telefono),
+    notas: limpiar(d.notas),
   };
 }
 
 export function desdeBronce(r: Partial<BronzeRow>): Cliente | null {
   const u = parseUbicacion(r.ubicacion ?? "");
-  return crearCliente({ nombre: r.nombre ?? "", direccion: r.direccion ?? "", ciudad: u.ciudad, zona: u.zona, tipo: r.segmento, estado: r.estado, barrio: r.barrio });
+  return crearCliente({ nombre: r.nombre ?? "", direccion: r.direccion ?? "", ciudad: u.ciudad, zona: u.zona, tipo: r.segmento, estado: r.estado, barrio: r.barrio, categoria: r.categoria, contacto: r.contacto, telefono: r.telefono, notas: r.notas });
 }
 
 export interface ReporteCalidad {

@@ -20,13 +20,15 @@
         <button id="imp">Restaurar respaldo</button>
         <button id="sync">Sincronizar con capa plata</button>
         <button id="undo">Deshacer autoplanificación</button>
+        <hr><button id="xdb">Exportar base completa (Excel)</button>
+        <button id="xcsv">Exportar clientes (.csv)</button>
         <input id="impf" type="file" accept="application/json" hidden>
       </div>
     </details>
   </div>
 </header>
 
-<nav class="tabs"><button id="t1" class="on">Planificador</button><button id="t2">Análisis de clientes</button></nav>
+<nav class="tabs"><button id="t1" class="on">Planificador</button><button id="t2">Análisis de clientes</button><button id="t3">Ficha de cliente</button></nav>
 
 <main id="v1">
   <section>
@@ -44,15 +46,16 @@
       <input id="fb" placeholder="Barrio" autocomplete="off">
       <div class="row"><input id="fc" list="dlCiudad" placeholder="Ciudad" value="Cali"><input id="fz" list="dlZona" placeholder="Área: Sur, Norte, Oeste…"></div>
       <div class="row"><select id="fe"></select><input id="ft" list="dlTipo" placeholder="Tipo (SPT, AGRO…)"></div>
-      <datalist id="dlCiudad"></datalist><datalist id="dlZona"></datalist><datalist id="dlTipo"></datalist>
+      <div class="row"><input id="fcat" list="dlCat" placeholder="Categoría de cliente (A, B, VIP…)"><input id="ftel" placeholder="Teléfono (opcional)"></div>
+      <datalist id="dlCiudad"></datalist><datalist id="dlZona"></datalist><datalist id="dlTipo"></datalist><datalist id="dlCat"></datalist>
       <button id="add" class="p">Agregar tienda</button>
       <button id="abrirImp">Importar tiendas (archivo, texto o imagen)</button>
     </div>
     <div class="box">
       <h3>Tiendas (<span id="cn">0</span>)</h3>
       <div class="row"><input id="q" placeholder="Buscar…"><select id="fArea"></select></div>
-      <div class="row"><select id="fEstado"></select><select id="fTipo"></select>
-        <select id="so"><option value="area">Ordenar: Área</option><option value="nombre">Ordenar: Nombre</option><option value="estado">Ordenar: Estado</option><option value="tipo">Ordenar: Tipo</option><option value="visitas">Ordenar: Más visitas</option></select></div>
+      <div class="row"><select id="fEstado"></select><select id="fTipo"></select><select id="fCat"></select>
+        <select id="so"><option value="area">Ordenar: Área</option><option value="nombre">Ordenar: Nombre</option><option value="estado">Ordenar: Estado</option><option value="tipo">Ordenar: Tipo</option><option value="categoria">Ordenar: Categoría</option><option value="visitas">Ordenar: Más visitas</option></select></div>
       <div class="pool" id="pool"></div>
     </div>
   </aside>
@@ -73,17 +76,29 @@
   </div>
 </main>
 
+<main id="v3" class="una" hidden>
+  <div>
+    <div class="box"><h3>Ficha de cliente</h3>
+      <div class="row"><input id="fcQ" placeholder="Buscar cliente…"><select id="fcSel"></select></div>
+    </div>
+    <div id="fcBody"></div>
+  </div>
+</main>
+
 <dialog id="dlg">
   <h3>Editar tienda</h3>
   <label>Nombre</label><input id="en"><label>Dirección</label><input id="ea"><label>Barrio</label><input id="eb">
   <div class="row"><div><label>Ciudad</label><input id="ec" list="dlCiudad"></div><div><label>Zona</label><input id="ez" list="dlZona"></div></div>
   <div class="row"><div><label>Estado del cliente</label><select id="ee"></select></div><div><label>Tipo de cliente</label><input id="et" list="dlTipo"></div></div>
+  <div class="row"><div><label>Categoría de cliente</label><input id="ek" list="dlCat"></div><div><label>Teléfono</label><input id="etel"></div></div>
+  <label>Contacto</label><input id="eco"><label>Notas</label><textarea id="eno" rows="2"></textarea>
   <div class="row"><button id="esave" class="p">Guardar cambios</button><button id="ecan">Cancelar</button><button id="edel" class="peligro">Eliminar tienda</button></div>
 </dialog>
 
 <dialog id="dimp">
-  <h3>Importar tiendas</h3>
+  <h3>Importar datos</h3>
   <p class="hint">Datos de entrada: <b>nombre, dirección, barrio y área</b> (en ese orden, con o sin encabezado). Acepta CSV, Excel (.xlsx), texto pegado desde Excel o <b>imágenes</b> (capturas o fotos): se lee el texto con OCR y tú revisas antes de importar. También puedes pegar una captura con Ctrl+V.</p>
+  <label>¿Qué vas a importar?</label><select id="impModo"><option value="tiendas">Tiendas (clientes)</option><option value="ventas">Ventas (cliente, fecha, monto)</option></select>
   <div class="row"><input id="impArchivo" type="file" accept=".csv,.txt,.xlsx,image/*" multiple><button id="plantilla">Descargar plantilla</button></div>
   <textarea id="impTexto" rows="5" placeholder="O pega aquí las filas copiadas de Excel: nombre ⇥ dirección ⇥ barrio ⇥ área"></textarea>
   <div class="row"><div><label>Ciudad (si no viene)</label><input id="impCiudad" list="dlCiudad" value="Cali"></div><div><label>Estado</label><select id="impEstado"></select></div><div><label>Tipo</label><input id="impTipo" list="dlTipo" placeholder="SPT, AGRO…"></div></div>

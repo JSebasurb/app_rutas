@@ -51,28 +51,30 @@ export function renderFiltros() {
   llenar($<HTMLSelectElement>("fArea"), "Todas las áreas", unicos(etiquetaArea));
   llenar($<HTMLSelectElement>("fEstado"), "Todos los estados", ESTADOS);
   llenar($<HTMLSelectElement>("fTipo"), "Todos los tipos", unicos((c) => c.tipo));
-  for (const [id, f] of [["dlCiudad", (c: FilaMes["cliente"]) => c.ciudad], ["dlZona", (c: FilaMes["cliente"]) => c.zona], ["dlTipo", (c: FilaMes["cliente"]) => c.tipo]] as const) {
+  llenar($<HTMLSelectElement>("fCat"), "Todas las categorías", unicos((c) => c.categoria));
+  for (const [id, f] of [["dlCiudad", (c: FilaMes["cliente"]) => c.ciudad], ["dlZona", (c: FilaMes["cliente"]) => c.zona], ["dlTipo", (c: FilaMes["cliente"]) => c.tipo], ["dlCat", (c: FilaMes["cliente"]) => c.categoria]] as const) {
     $(id).innerHTML = unicos(f).map((x) => `<option value="${esc(x)}">`).join("");
   }
 }
 
 export function renderPool() {
-  const q = val("q").toLowerCase(), fa = val("fArea"), fe = val("fEstado"), ft = val("fTipo"), so = val("so");
+  const q = val("q").toLowerCase(), fa = val("fArea"), fe = val("fEstado"), ft = val("fTipo"), fcat = val("fCat"), so = val("so");
   const cmp = (a: string, b: string) => a.localeCompare(b, "es");
   const filas = filasMes(app.clientes, app.agenda, app.year, app.month).filter(({ cliente: c }) =>
-    (!fa || etiquetaArea(c) === fa) && (!fe || c.estado === fe) && (!ft || c.tipo === ft) &&
-    [c.nombre, c.direccion, c.barrio, etiquetaArea(c), c.tipo, c.estado].join(" ").toLowerCase().includes(q));
+    (!fa || etiquetaArea(c) === fa) && (!fe || c.estado === fe) && (!ft || c.tipo === ft) && (!fcat || c.categoria === fcat) &&
+    [c.nombre, c.direccion, c.barrio, etiquetaArea(c), c.tipo, c.categoria, c.estado].join(" ").toLowerCase().includes(q));
   const nombre = (a: FilaMes, b: FilaMes) => cmp(a.cliente.nombre, b.cliente.nombre);
   filas.sort((a, b) => {
     const x = a.cliente, y = b.cliente;
     if (so === "nombre") return nombre(a, b);
     if (so === "estado") return ESTADOS.indexOf(x.estado) - ESTADOS.indexOf(y.estado) || nombre(a, b);
+    if (so === "categoria") return cmp(x.categoria || "~", y.categoria || "~") || nombre(a, b);
     if (so === "tipo") return cmp(x.tipo || "~", y.tipo || "~") || nombre(a, b);
     if (so === "visitas") return b.dias.length - a.dias.length || nombre(a, b);
     return cmp(etiquetaArea(x), etiquetaArea(y)) || nombre(a, b);
   });
   $("cn").textContent = String(app.clientes.length) + (filas.length !== app.clientes.length ? ` · ${filas.length} filtradas` : "");
-  const grupo = (c: FilaMes["cliente"]) => so === "area" ? etiquetaArea(c) : so === "estado" ? c.estado : so === "tipo" ? c.tipo || "Sin tipo" : null;
+  const grupo = (c: FilaMes["cliente"]) => so === "area" ? etiquetaArea(c) : so === "estado" ? c.estado : so === "tipo" ? c.tipo || "Sin tipo" : so === "categoria" ? c.categoria || "Sin categoría" : null;
   let g: string | null = null, h = "";
   for (const { cliente: c, dias } of filas) {
     const k = grupo(c);
@@ -81,8 +83,8 @@ export function renderPool() {
       h += `<div class="grp">${esc(k)} <span>(${filas.filter((x) => grupo(x.cliente) === k).length})</span></div>`;
     }
     h += `<div class="item" draggable="true" data-id="${c.id}"><div class="t"><b>${esc(c.nombre)}</b><span>${esc(c.direccion)}${c.barrio ? ` · ${esc(c.barrio)}` : ""}</span><br>
-      <span class="tag">${esc(etiquetaArea(c))}</span><span class="tag ${claseEstado(c.estado)}">${esc(c.estado)}</span>${c.tipo ? `<span class="tag tp">${esc(c.tipo)}</span>` : ""}${dias.length ? `<span class="tag d">Día ${dias.join(", ")}</span>` : ""}</div>
-      <div class="acts"><button class="sm" data-act="add" data-id="${c.id}" ${app.sel ? "" : "disabled"}>+ Día</button><button class="sm" data-act="edit" data-id="${c.id}">Editar</button></div></div>`;
+      <span class="tag">${esc(etiquetaArea(c))}</span><span class="tag ${claseEstado(c.estado)}">${esc(c.estado)}</span>${c.tipo ? `<span class="tag tp">${esc(c.tipo)}</span>` : ""}${c.categoria ? `<span class="tag cat">★ ${esc(c.categoria)}</span>` : ""}${dias.length ? `<span class="tag d">Día ${dias.join(", ")}</span>` : ""}</div>
+      <div class="acts"><button class="sm" data-act="add" data-id="${c.id}" ${app.sel ? "" : "disabled"}>+ Día</button><button class="sm" data-act="ficha" data-id="${c.id}">Ficha</button><button class="sm" data-act="edit" data-id="${c.id}">Editar</button></div></div>`;
   }
   $("pool").innerHTML = h || '<div class="empty">No hay tiendas con esos filtros.</div>';
 }
@@ -125,6 +127,7 @@ export function bindPlanner() {
     const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button[data-act]");
     if (!b) return;
     if (b.dataset.act === "edit") abrirEditor(b.dataset.id!);
+    else if (b.dataset.act === "ficha") document.dispatchEvent(new CustomEvent("ver-ficha", { detail: b.dataset.id }));
     else if (app.sel) agendar(app.sel, b.dataset.id!);
   });
   $("pool").addEventListener("dragstart", (e) => {
@@ -133,12 +136,12 @@ export function bindPlanner() {
   });
 
   $("q").addEventListener("input", renderPool);
-  for (const id of ["fArea", "fEstado", "fTipo", "so"]) $(id).addEventListener("change", renderPool);
+  for (const id of ["fArea", "fEstado", "fTipo", "fCat", "so"]) $(id).addEventListener("change", renderPool);
 
   $("add").onclick = () => {
-    const err = agregarCliente({ nombre: val("fn"), direccion: val("fa"), barrio: val("fb"), ciudad: val("fc"), zona: val("fz"), estado: val("fe"), tipo: val("ft") });
+    const err = agregarCliente({ nombre: val("fn"), direccion: val("fa"), barrio: val("fb"), ciudad: val("fc"), zona: val("fz"), estado: val("fe"), tipo: val("ft"), categoria: val("fcat"), telefono: val("ftel") });
     if (err) return alert(err);
-    for (const id of ["fn", "fa", "fb"]) $<HTMLInputElement>(id).value = "";
+    for (const id of ["fn", "fa", "fb", "ftel"]) $<HTMLInputElement>(id).value = "";
     $("fn").focus();
   };
   $("abrirImp").onclick = abrirImportar;

@@ -50,6 +50,15 @@ npm run build      # genera dist/
 - **Desde la app:** formulario, pegar lista (`Nombre; Dirección; Ciudad; Zona; Estado; Tipo`) o botón *Editar*.
 - **Desde el repositorio:** agrega un CSV en `data/bronze/` con las columnas `nombre,direccion,ubicacion,segmento,estado,gestion,fuente` (y opcional `barrio`), haz push y el pipeline regenera plata y oro. En la app, *Datos → Sincronizar con capa plata* suma las tiendas nuevas sin tocar tus ediciones.
 
+## Base de datos de clientes: categorías, ventas e historial
+
+- **Campos del cliente:** nombre, dirección, barrio, ciudad, zona, estado, tipo, **categoría** (A, B, VIP… libre), contacto, teléfono y notas.
+- **Ficha de cliente** (pestaña nueva, o botón *Ficha* en la lista y el nombre en el análisis): ventas totales, ticket promedio, última venta, ventas por mes, historial de visitas (realizada / vencida / agendada), próxima visita y cumplimiento. Desde ahí se registran y eliminan ventas y se salta al día de cada visita.
+- **Análisis:** ventas del mes, columna de ventas por cliente y desglose por categoría.
+- **Importar** (*Importar datos*): tiendas o **ventas** (`cliente, fecha, monto, nota`; con `dirección` para distinguir homónimos). Entiende fechas `2026-11-10` y `10/11/2026` y montos como `$ 1.234.567` o `1,234.50`; las ventas ya registradas se omiten, así que se puede reimportar sin duplicar.
+- **Exportar** (menú *Datos*): base completa en Excel (hojas Clientes, Ventas, Visitas y Resumen por cliente), clientes en CSV, y respaldo `.json` con todo (clientes, agenda, visitas realizadas y ventas). Las hojas *Clientes* y *Ventas* se pueden volver a importar tal cual.
+- **Guardado:** automático en el navegador (`localStorage`, unos 5 MB). Para llevar o proteger los datos, descarga el respaldo `.json` con regularidad.
+
 ## Funciones de planificación
 
 - **Autoplanificar:** reparte las tiendas por los días hábiles del mes agrupando por área y barrio, con máximo de visitas por día, días de trabajo y filtro por estado. En el mes actual no agenda días pasados. Se deshace desde *Datos*.

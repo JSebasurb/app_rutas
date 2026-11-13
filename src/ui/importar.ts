@@ -1,9 +1,11 @@
 import { ESTADOS } from "../types.ts";
 import type { Cliente, DatosCliente } from "../types.ts";
-import { app, buscar, importarDatos } from "../store.ts";
+import { app, buscar, importarDatos, importarVentas } from "../store.ts";
 import { crearCliente } from "../core/silver.ts";
 import { etiquetaArea } from "../core/gold.ts";
-import { PLANTILLA, leerTabla, mapearFilas } from "../core/importar.ts";
+import { PLANTILLA, PLANTILLA_VENTAS, leerTabla, mapearFilas, mapearVentas } from "../core/importar.ts";
+import type { FilaVenta } from "../core/importar.ts";
+import { formatoMonto, resolverCliente } from "../core/ficha.ts";
 import { aTabla, extraerDeTexto } from "../core/ocr.ts";
 import { aplicarCorrecciones, aprender, corregirConConocidos, revisar, sinCorrecciones } from "../core/aprender.ts";
 import type { Correcciones } from "../core/aprender.ts";
@@ -32,13 +34,45 @@ async function leerXlsx(buf: ArrayBuffer): Promise<string[][]> {
   const out: string[][] = [];
   wb.worksheets[0]?.eachRow({ includeEmpty: false }, (row: any) => {
     const v: string[] = [];
-    for (let i = 1; i <= row.cellCount; i++) v.push(String(row.getCell(i).text ?? "").trim());
+    for (let i = 1; i <= row.cellCount; i++) {
+      const cel = row.getCell(i);
+      v.push(cel.value instanceof Date ? cel.value.toISOString().slice(0, 10) : String(cel.text ?? "").trim());
+    }
     out.push(v);
   });
   return out;
 }
 
+let listosVentas: FilaVenta[] = [];
+
 function vista() {
+  if (val("impModo") === "ventas") vistaVentas();
+  else vistaTiendas();
+}
+
+function vistaVentas() {
+  const ok = $<HTMLButtonElement>("impOk");
+  const muestra: { c: string; f: string; m: number; n: string }[] = [];
+  const sin = new Set<string>();
+  let dup = 0, inv = 0;
+  listosVentas = [];
+  for (const f of mapearVentas(filas)) {
+    if (!f.fecha || f.monto === null || f.monto <= 0) { inv++; continue; }
+    const c = resolverCliente(app.clientes, f.cliente, f.direccion);
+    if (!c) { sin.add(f.cliente || "(sin nombre)"); continue; }
+    if (app.ventas.some((v) => v.clienteId === c.id && v.fecha === f.fecha && v.monto === f.monto && v.nota === f.nota)) { dup++; continue; }
+    listosVentas.push(f);
+    if (muestra.length < 10) muestra.push({ c: c.nombre, f: f.fecha, m: f.monto, n: f.nota });
+  }
+  $("impVista").innerHTML = filas.length
+    ? `<p class="hint"><b>${listosVentas.length}</b> ventas nuevas · ${dup} ya registradas · ${sin.size} sin cliente${sin.size ? ` (${[...sin].slice(0, 5).map(esc).join(", ")}${sin.size > 5 ? "…" : ""})` : ""} · ${inv} inválidas (fecha o monto).</p>` +
+      (muestra.length ? `<div class="scroll"><table class="tb"><tr><th>Cliente</th><th>Fecha</th><th>Monto</th><th>Nota</th></tr>${muestra.map((x) => `<tr><td>${esc(x.c)}</td><td>${x.f}</td><td>${formatoMonto(x.m)}</td><td>${esc(x.n)}</td></tr>`).join("")}</table></div>` : "")
+    : '<p class="hint">Columnas de ventas: <b>cliente, fecha, monto y nota</b> (con o sin encabezado). Si hay clientes con el mismo nombre, agrega la columna <b>dirección</b>. Las fechas pueden ser 2026-11-10 o 10/11/2026.</p>';
+  ok.disabled = !listosVentas.length;
+  ok.textContent = listosVentas.length ? `Importar ${listosVentas.length} ventas` : "Importar";
+}
+
+function vistaTiendas() {
   const { datos, encabezado } = mapearFilas(filas);
   const vistos = new Set<string>();
   const muestra: Cliente[] = [];
@@ -66,6 +100,7 @@ function vista() {
 
 /** Imagen → OCR → texto editable (tabla con tabulaciones) → misma vista previa que cualquier otra fuente. */
 async function desdeImagenes(imgs: File[]) {
+  if (val("impModo") === "ventas") return void alert("Las imágenes solo se leen para tiendas. Para ventas usa CSV, Excel o texto pegado.");
   const est = $("impOcr");
   $<HTMLButtonElement>("impOk").disabled = true;
   try {
@@ -99,7 +134,10 @@ export function abrirImportar() {
 
 export function bindImportar() {
   $("impCan").onclick = () => dlg().close();
-  $("plantilla").onclick = () => descargar(new Blob(["\uFEFF" + PLANTILLA], { type: "text/csv;charset=utf-8" }), "plantilla_tiendas.csv");
+  $("plantilla").onclick = () => {
+    const v = val("impModo") === "ventas";
+    descargar(new Blob(["\uFEFF" + (v ? PLANTILLA_VENTAS : PLANTILLA)], { type: "text/csv;charset=utf-8" }), v ? "plantilla_ventas.csv" : "plantilla_tiendas.csv");
+  };
   const manejar = async (archivos: File[]) => {
     const imgs = archivos.filter((f) => f.type.startsWith("image/"));
     if (imgs.length) return desdeImagenes(imgs);
@@ -125,8 +163,14 @@ export function bindImportar() {
     if (fs.length) { e.preventDefault(); void manejar(fs); }
   });
   $("impTexto").addEventListener("input", () => { filas = leerTabla(val("impTexto")); vista(); });
-  for (const id of ["impCiudad", "impEstado", "impTipo"]) $(id).addEventListener("input", vista);
+  for (const id of ["impCiudad", "impEstado", "impTipo", "impModo"]) $(id).addEventListener("input", vista);
   $("impOk").onclick = () => {
+    if (val("impModo") === "ventas") {
+      const r = importarVentas(listosVentas);
+      alert(`${r.nuevas} ventas importadas. ${r.duplicadas} ya registradas, ${r.sinCliente} sin cliente, ${r.invalidas} inválidas.`);
+      dlg().close();
+      return;
+    }
     if (ocrOriginal.length) {
       guardarMemoria(aprender(ocrOriginal, mapearFilas(filas).datos, leerMemoria()));
       ocrOriginal = [];

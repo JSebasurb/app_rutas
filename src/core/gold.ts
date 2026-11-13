@@ -1,7 +1,7 @@
 /**
  * CAPA ORO — métricas listas para consumir (resumen de cartera y análisis mensual de agenda).
  */
-import type { Agenda, Cliente, Hechas } from "../types.ts";
+import type { Agenda, Cliente, Hechas, Venta } from "../types.ts";
 import { indiceSemana, prefijoMes } from "./dates.ts";
 
 export const etiquetaArea = (c: Cliente) => (c.zona ? `${c.ciudad} · ${c.zona}` : c.ciudad || "Sin área");
@@ -23,6 +23,7 @@ export function resumenCartera(cs: Cliente[]) {
     porZona: contar(cs, (c) => c.zona),
     porArea: contar(cs, etiquetaArea),
     porTipo: contar(cs, (c) => c.tipo),
+    porCategoria: contar(cs, (c) => c.categoria),
     porEstado: contar(cs, (c) => c.estado),
   };
 }
@@ -73,8 +74,10 @@ export function agrupar(filas: FilaMes[], f: (c: Cliente) => string, orden?: rea
   return orden ? arr : arr.sort((a, b) => a.clave.localeCompare(b.clave, "es"));
 }
 
-export function analisisMes(cs: Cliente[], agenda: Agenda, y: number, m: number, hechas: Hechas = {}) {
+export function analisisMes(cs: Cliente[], agenda: Agenda, y: number, m: number, hechas: Hechas = {}, ventas: Venta[] = []) {
   const filas = filasMes(cs, agenda, y, m, hechas);
+  const pre = prefijoMes(y, m);
+  const ventasMes = ventas.filter((v) => v.fecha.startsWith(pre)).reduce((a, v) => a + v.monto, 0);
   const agendadas = filas.filter((r) => r.dias.length).length;
   const visitas = filas.reduce((a, r) => a + r.dias.length, 0);
   const realizadas = filas.reduce((a, r) => a + r.hechas, 0);
@@ -87,6 +90,7 @@ export function analisisMes(cs: Cliente[], agenda: Agenda, y: number, m: number,
     sinAgendar: cs.length - agendadas,
     visitas,
     realizadas,
+    ventasMes,
     cumplimiento: visitas ? Math.round((realizadas * 100) / visitas) : 0,
     cobertura: cs.length ? Math.round((agendadas * 100) / cs.length) : 0,
     porSemana,
